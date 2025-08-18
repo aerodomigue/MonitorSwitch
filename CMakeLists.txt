@@ -24,6 +24,13 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
+# Sanity check: ensure critical header exists (helps debug CI path issues)
+if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/core/application.h")
+    message(FATAL_ERROR "Missing header: ${CMAKE_CURRENT_SOURCE_DIR}/src/core/application.h")
+else()
+    message(STATUS "Found header: ${CMAKE_CURRENT_SOURCE_DIR}/src/core/application.h")
+endif()
+
 # Collect common source files
 file(GLOB_RECURSE COMMON_SOURCES
     src/main.cpp
@@ -78,11 +85,16 @@ file(GLOB_RECURSE HEADERS
 # Create executable
 add_executable(MonitorSwitch ${COMMON_SOURCES} ${PLATFORM_SOURCES})
 
-# Set include directories for the target
-target_include_directories(MonitorSwitch PRIVATE 
-    "src"
-    "include"
+# Set include directories for the target (put ours before system paths)
+target_include_directories(MonitorSwitch BEFORE PRIVATE 
+    "${CMAKE_CURRENT_SOURCE_DIR}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
+
+# Debug: print include dirs at configure time
+get_target_property(MS_INCS MonitorSwitch INCLUDE_DIRECTORIES)
+message(STATUS "MonitorSwitch include dirs: ${MS_INCS}")
 
 # Link Qt libraries
 target_link_libraries(MonitorSwitch 
