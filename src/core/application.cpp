@@ -189,7 +189,13 @@ bool Application::setAutostart(bool enable) {
         GetModuleFileName(nullptr, exePath, MAX_PATH);
         
         std::wstring wExePath(exePath);
-        std::string exePathStr(wExePath.begin(), wExePath.end());
+        // Proper Unicode to UTF-8 conversion
+        std::string exePathStr;
+        int len = WideCharToMultiByte(CP_UTF8, 0, wExePath.c_str(), -1, nullptr, 0, nullptr, nullptr);
+        if (len > 0) {
+            exePathStr.resize(len - 1);
+            WideCharToMultiByte(CP_UTF8, 0, wExePath.c_str(), -1, &exePathStr[0], len, nullptr, nullptr);
+        }
 #else
         // For Unix-like systems, we need to determine the executable path differently
         // This is a simplified approach - in a real application you might want to

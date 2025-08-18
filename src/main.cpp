@@ -10,6 +10,7 @@
 #include <QDebug>
 #include <QCoreApplication>
 #include <QMetaObject>
+#include <QStyle>
 #include "ui/mainwindow.h"
 #include "core/application.h"
 #include "../include/config.h"
@@ -75,7 +76,32 @@ int main(int argc, char *argv[]) {
     }
     qDebug() << "Trying icon path:" << iconPath;
 #else
-    QIcon appIcon("icons/MonitorSwitch_icon.svg");
+    // Windows and Linux icon loading with multiple fallbacks
+    QIcon appIcon;
+    
+    // Try different icon paths in order of preference
+    QStringList iconPaths = {
+        QCoreApplication::applicationDirPath() + "/icons/MonitorSwitch.ico",  // Windows ICO in app dir
+        QCoreApplication::applicationDirPath() + "/icons/MonitorSwitch.png",  // PNG in app dir
+        QCoreApplication::applicationDirPath() + "/icons/MonitorSwitch_icon.svg", // SVG in app dir
+        "icons/MonitorSwitch.ico",     // Relative ICO
+        "icons/MonitorSwitch.png",     // Relative PNG  
+        "icons/MonitorSwitch_icon.svg" // Relative SVG
+    };
+    
+    for (const QString& path : iconPaths) {
+        appIcon = QIcon(path);
+        if (!appIcon.isNull()) {
+            qDebug() << "Successfully loaded icon from:" << path;
+            break;
+        }
+    }
+    
+    if (appIcon.isNull()) {
+        qWarning() << "Could not load application icon from any path";
+        // Create a default icon as fallback
+        appIcon = qApp->style()->standardIcon(QStyle::SP_ComputerIcon);
+    }
 #endif
     app.setWindowIcon(appIcon);
     mainWindow.setWindowIcon(appIcon);

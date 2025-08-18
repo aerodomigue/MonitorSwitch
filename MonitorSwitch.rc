@@ -1,5 +1,8 @@
 #include <windows.h>
 
+// Resource IDs
+#define IDI_ICON1 101
+
 // Icon resource
 IDI_ICON1 ICON "icons/MonitorSwitch.ico"
 

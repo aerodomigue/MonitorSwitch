@@ -196,7 +196,13 @@ std::string StorageService::getLocalAppDataPath() {
     
     if (SUCCEEDED(hr) && localAppDataPath) {
         std::wstring wPath(localAppDataPath);
-        std::string path(wPath.begin(), wPath.end());
+        // Proper Unicode to UTF-8 conversion
+        std::string path;
+        int len = WideCharToMultiByte(CP_UTF8, 0, wPath.c_str(), -1, nullptr, 0, nullptr, nullptr);
+        if (len > 0) {
+            path.resize(len - 1);
+            WideCharToMultiByte(CP_UTF8, 0, wPath.c_str(), -1, &path[0], len, nullptr, nullptr);
+        }
         CoTaskMemFree(localAppDataPath);
         return path;
     }
