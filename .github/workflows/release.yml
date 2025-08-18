@@ -29,63 +29,61 @@ jobs:
           cmake --build build -- -v
       - name: Sign macOS app (ad-hoc)
         run: |
-          # Ad-hoc sign the app bundle to make it runnable
-          # Users will need to right-click -> Open to bypass Gatekeeper warning
+          # Ad-hoc sign the app bundle with free certificate
+          # This allows the app to run without requiring a paid Apple Developer certificate
+          echo "Signing app with ad-hoc certificate..."
           codesign --force --deep --sign - build/MonitorSwitch.app
           
           # Verify the signature
-          codesign --verify --verbose build/MonitorSwitch.app
+          echo "Verifying app signature..."
+          codesign --verify --verbose=2 build/MonitorSwitch.app
           
-          # Check what we signed
-          codesign --display --verbose build/MonitorSwitch.app
-      - name: Create DMG
+          # Display signature information
+          echo "App signature details:"
+          codesign --display --verbose=4 build/MonitorSwitch.app
+          
+          # Test that the app is properly signed
+          echo "Testing app signature validity..."
+          spctl --assess --type exec build/MonitorSwitch.app || echo "Note: App assessment failed (expected for ad-hoc signed apps)"
+      - name: Create ZIP package
         run: |
-          # Create a temporary directory for DMG contents
-          mkdir -p dmg_temp
-          cp -R build/MonitorSwitch.app dmg_temp/
-          
-          # Create a symbolic link to Applications folder
-          ln -s /Applications dmg_temp/Applications
+          # Create a temporary directory for packaging
+          mkdir -p macos_package
+          cp -R build/MonitorSwitch.app macos_package/
           
           # Create installation instructions
-          cat > dmg_temp/INSTALL.txt << 'EOF'
+          cat > macos_package/INSTALL.txt << 'EOF'
           MonitorSwitch Installation Instructions
           =====================================
           
-          IMPORTANT: If you see a malware warning when opening the DMG:
-          1. Right-click on the MonitorSwitch.dmg file and select "Open"
-          2. Click "Open" when macOS asks for confirmation
-          3. The DMG will then mount normally
+          IMPORTANT: This app is ad-hoc signed (free certificate) for distribution.
           
-          To install the app:
-          1. Drag MonitorSwitch.app to the Applications folder
-          2. Right-click on MonitorSwitch.app in Applications and select "Open"
+          To install and run the app:
+          1. Copy MonitorSwitch.app to your Applications folder
+          2. Right-click on MonitorSwitch.app and select "Open"
           3. Click "Open" when macOS asks for confirmation
           4. The app will then run normally from future launches
           
-          Note: This app is ad-hoc signed for distribution. These warnings are expected
-          for apps not distributed through the Mac App Store.
-          
-          Alternative method if right-click doesn't work:
+          If you see security warnings:
           - Go to System Preferences > Security & Privacy > General
           - Click "Open Anyway" when you see the MonitorSwitch notification
+          
+          Note: These security warnings are expected for apps not distributed 
+          through the Mac App Store.
           EOF
           
-          # Create the DMG
-          hdiutil create -volname "MonitorSwitch" -srcfolder dmg_temp -ov -format UDZO build/MonitorSwitch.dmg
+          # Create the ZIP file
+          cd macos_package
+          zip -r ../build/MonitorSwitch-macOS.zip .
+          cd ..
           
-          # Sign the DMG as well
-          codesign --force --sign - build/MonitorSwitch.dmg
-          
-          # Verify the DMG was created and signed
-          ls -la build/MonitorSwitch.dmg
-          codesign --verify --verbose build/MonitorSwitch.dmg
+          # Verify the ZIP was created
+          ls -la build/MonitorSwitch-macOS.zip
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v4
         with:
           name: MonitorSwitch-macOS
-          path: |
-            build/MonitorSwitch.dmg
+          path: build/MonitorSwitch-macOS.zip
 
   build-windows:
     runs-on: windows-latest

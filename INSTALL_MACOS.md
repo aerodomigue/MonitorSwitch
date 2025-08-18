@@ -2,21 +2,20 @@
 
 ## Important Security Notice
 
-MonitorSwitch is an open-source application that is **ad-hoc signed** for distribution. This means macOS will show security warnings, which is normal and expected for apps not distributed through the Mac App Store.
+MonitorSwitch is an open-source application that is **ad-hoc signed** with a free certificate for distribution. This means macOS will show security warnings, which is normal and expected for apps not distributed through the Mac App Store.
 
 ## Installation Steps
 
-### Step 1: Download and Open the DMG
+### Step 1: Download and Extract the ZIP
 
-1. Download `MonitorSwitch.dmg` from the [Releases page](https://github.com/aerodomigue/MonitorSwitch/releases)
-2. **Right-click** on the downloaded DMG file and select **"Open"**
-3. Click **"Open"** when macOS shows the malware warning
-4. The DMG will mount and open
+1. Download `MonitorSwitch-macOS.zip` from the [Releases page](https://github.com/aerodomigue/MonitorSwitch/releases)
+2. Double-click the ZIP file to extract it
+3. You'll see a folder containing `MonitorSwitch.app` and installation instructions
 
 ### Step 2: Install the Application
 
-1. Drag `MonitorSwitch.app` to the **Applications** folder
-2. Go to your Applications folder
+1. Copy `MonitorSwitch.app` to your **Applications** folder
+2. Go to your Applications folder  
 3. **Right-click** on `MonitorSwitch.app` and select **"Open"**
 4. Click **"Open"** when macOS shows the security warning
 5. The app will launch and run normally from future launches
