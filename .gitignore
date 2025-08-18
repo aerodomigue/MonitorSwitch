@@ -127,7 +127,8 @@ coverage/
 gmon.out
 
 # Core dumps
-core
+# Only ignore a core dump file in repo root; don't ignore directories named "core" like src/core
+/core
 *.core
 
 # macOS specific
