@@ -21,13 +21,28 @@ jobs:
         uses: actions/checkout@v4
       - name: Build (macOS)
         run: |
-          chmod +x ./build.sh
-          ./build.sh
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_VERBOSE_MAKEFILE=ON
+          cmake --build build -- -v
+      - name: Create DMG
+        run: |
+          # Create a temporary directory for DMG contents
+          mkdir -p dmg_temp
+          cp -R build/MonitorSwitch.app dmg_temp/
+          
+          # Create a symbolic link to Applications folder
+          ln -s /Applications dmg_temp/Applications
+          
+          # Create the DMG
+          hdiutil create -volname "MonitorSwitch" -srcfolder dmg_temp -ov -format UDZO build/MonitorSwitch.dmg
+          
+          # Verify the DMG was created
+          ls -la build/MonitorSwitch.dmg
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v4
         with:
           name: MonitorSwitch-macOS
-          path: build/MonitorSwitch.app
+          path: |
+            build/MonitorSwitch.dmg
 
   build-windows:
     runs-on: windows-latest
@@ -47,7 +62,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: MonitorSwitch-Windows
-          path: build/MonitorSwitch.exe
+          path: build\Release\MonitorSwitch.exe
 
   build-linux:
     runs-on: ubuntu-latest
@@ -77,35 +92,31 @@ jobs:
           path: build/MonitorSwitch
 
   release:
-    if: startsWith(github.ref, 'refs/tags/RELASE_V')
+    if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'release' && github.event.action == 'created')
     needs: [build-macos, build-windows, build-linux]
     runs-on: ubuntu-latest
     steps:
-      - name: Download macOS artifact
+      - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          name: MonitorSwitch-macOS
-          path: ./artifacts
-      - name: Download Windows artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: MonitorSwitch-Windows
-          path: ./artifacts
-      - name: Download Linux artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: MonitorSwitch-Linux
-          path: ./artifacts
-      - name: Extract version from tag
-        id: version
-        run: echo "version=${GITHUB_REF_NAME#RELASE_}" >> $GITHUB_OUTPUT
-      - name: Create GitHub Release
+          path: artifacts
+          merge-multiple: true
+
+      - name: List downloaded files
+        run: ls -R artifacts
+
+      - name: Create GitHub Release and Upload Assets
         uses: softprops/action-gh-release@v2
-        with:
-          name: ${{ steps.version.outputs.version }}
-          files: |
-            artifacts/MonitorSwitch.app
-            artifacts/MonitorSwitch.exe
-            artifacts/MonitorSwitch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # Use the tag name as the release name
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          # Set to true for prerelease, false for final release
+          prerelease: false
+          # Path to files to attach to the release
+          files: |
+            artifacts/MonitorSwitch.dmg
+            artifacts/MonitorSwitch.exe
+            artifacts/MonitorSwitch
