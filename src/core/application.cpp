@@ -194,7 +194,7 @@ bool Application::setAutostart(bool enable) {
         // For Unix-like systems, we need to determine the executable path differently
         // This is a simplified approach - in a real application you might want to
         // use platform-specific methods to get the full executable path
-        std::string exePathStr = "softKMS"; // Assumes it's in PATH
+        std::string exePathStr = "MonitorSwitch"; // Assumes it's in PATH
 #endif
         
         if (!m_autostartService->enableAutostart(exePathStr)) {

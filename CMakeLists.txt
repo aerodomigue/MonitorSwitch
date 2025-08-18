@@ -146,11 +146,21 @@ endif()
 if(APPLE)
     set_target_properties(MonitorSwitch PROPERTIES
         MACOSX_BUNDLE TRUE
-        MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/Info.plist.in
+        MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in
+        MACOSX_BUNDLE_ICON_FILE MonitorSwitch.icns
     )
+    
+    # Add the .icns file as a resource if it exists
+    if(EXISTS ${CMAKE_SOURCE_DIR}/icons/MonitorSwitch.icns)
+        target_sources(MonitorSwitch PRIVATE ${CMAKE_SOURCE_DIR}/icons/MonitorSwitch.icns)
+        set_source_files_properties(${CMAKE_SOURCE_DIR}/icons/MonitorSwitch.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+    endif()
+    
+    # Also add the PNG for runtime access
+    target_sources(MonitorSwitch PRIVATE ${CMAKE_SOURCE_DIR}/icons/MonitorSwitch.png)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/icons/MonitorSwitch.png PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+    
     install(TARGETS MonitorSwitch BUNDLE DESTINATION .)
-    # Install icon dans le bundle Resources
-    install(FILES MonitorSwitch.png DESTINATION MonitorSwitch.app/Contents/Resources)
 elseif(UNIX AND NOT APPLE)
     install(TARGETS MonitorSwitch RUNTIME DESTINATION bin)
     install(FILES MonitorSwitch.desktop DESTINATION share/applications)

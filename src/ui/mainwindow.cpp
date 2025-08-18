@@ -415,11 +415,29 @@ void MainWindow::populateDeviceList() {
 }
 
 void MainWindow::changeEvent(QEvent* event) {
+    if (event->type() == QEvent::WindowStateChange) {
+        if (isMinimized()) {
+#ifdef Q_OS_MAC
+            // On macOS, hide the window when minimized to avoid dock icon
+            hide();
+            event->ignore();
+            return;
+#endif
+        }
+    }
     QMainWindow::changeEvent(event);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
-    // Comportement standard : fermer l'application
+#ifdef Q_OS_MAC
+    // On macOS, hide to tray instead of closing
+    if (event->spontaneous()) {
+        hide();
+        event->ignore();
+        return;
+    }
+#endif
+    // Default behavior for other platforms or programmatic close
     QMainWindow::closeEvent(event);
 }
 

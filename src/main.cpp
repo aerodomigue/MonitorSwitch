@@ -62,11 +62,11 @@ int main(int argc, char *argv[]) {
     QIcon appIcon(iconPath);
     if (appIcon.isNull()) {
         // Fallback: try the app directory
-        iconPath = QCoreApplication::applicationDirPath() + "/MonitorSwitch.png";
+        iconPath = QCoreApplication::applicationDirPath() + "/icons/MonitorSwitch.png";
         appIcon = QIcon(iconPath);
         if (appIcon.isNull()) {
             // Final fallback: relative path
-            appIcon = QIcon("MonitorSwitch.png");
+            appIcon = QIcon("icons/MonitorSwitch.png");
             if (appIcon.isNull()) {
                 qWarning() << "Could not load icon file from any path";
             }
@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
     }
     qDebug() << "Trying icon path:" << iconPath;
 #else
-    QIcon appIcon("MonitorSwitch_icon.svg");
+    QIcon appIcon("icons/MonitorSwitch_icon.svg");
 #endif
     app.setWindowIcon(appIcon);
     mainWindow.setWindowIcon(appIcon);

@@ -11,7 +11,6 @@ out/
 CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
-Makefile
 *.cmake
 !CMakeLists.txt
 
@@ -139,7 +138,6 @@ gmon.out
 # macOS specific
 .AppleDouble
 .LSOverride
-Icon?
 
 # Windows specific
 *.lnk

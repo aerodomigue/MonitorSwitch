@@ -59,7 +59,20 @@ When your selected USB device (such as a keyboard, mouse, or USB hub) is disconn
 
 ## Installation
 
-### Prerequisites
+### Download Pre-built Releases
+
+Download the latest release for your platform from the [Releases page](https://github.com/aerodomigue/MonitorSwitch/releases).
+
+#### 📱 macOS Users - Important Notice
+macOS will show security warnings for this app since it's not distributed through the Mac App Store. **This is normal and expected.**
+
+👉 **See [INSTALL_MACOS.md](INSTALL_MACOS.md) for detailed installation instructions**
+
+The process involves right-clicking to open both the DMG and the app to bypass macOS Gatekeeper warnings.
+
+### Build from Source
+
+#### Prerequisites
 - **Qt6** (Core, Widgets)
 - **CMake** 3.16 or higher
 - **C++17** compatible compiler

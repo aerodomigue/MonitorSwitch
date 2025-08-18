@@ -52,12 +52,23 @@ jobs:
           MonitorSwitch Installation Instructions
           =====================================
           
+          IMPORTANT: If you see a malware warning when opening the DMG:
+          1. Right-click on the MonitorSwitch.dmg file and select "Open"
+          2. Click "Open" when macOS asks for confirmation
+          3. The DMG will then mount normally
+          
+          To install the app:
           1. Drag MonitorSwitch.app to the Applications folder
-          2. The first time you open the app, right-click on it and select "Open"
+          2. Right-click on MonitorSwitch.app in Applications and select "Open"
           3. Click "Open" when macOS asks for confirmation
           4. The app will then run normally from future launches
           
-          Note: This app is ad-hoc signed for distribution. The warning is expected.
+          Note: This app is ad-hoc signed for distribution. These warnings are expected
+          for apps not distributed through the Mac App Store.
+          
+          Alternative method if right-click doesn't work:
+          - Go to System Preferences > Security & Privacy > General
+          - Click "Open Anyway" when you see the MonitorSwitch notification
           EOF
           
           # Create the DMG
