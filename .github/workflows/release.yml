@@ -27,6 +27,26 @@ jobs:
         run: |
           cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_VERBOSE_MAKEFILE=ON
           cmake --build build -- -v
+      - name: Copy icon to app bundle
+        run: |
+          # Copy the icon to the app bundle Resources directory
+          mkdir -p build/MonitorSwitch.app/Contents/Resources
+          cp icons/MonitorSwitch.icns build/MonitorSwitch.app/Contents/Resources/
+          
+          # Verify app bundle structure
+          echo "App bundle structure:"
+          find build/MonitorSwitch.app -type f | head -20
+          
+          # Check Info.plist
+          echo "Info.plist contents:"
+          cat build/MonitorSwitch.app/Contents/Info.plist || echo "Info.plist not found"
+          
+          # Check executable
+          echo "Executable file:"
+          ls -la build/MonitorSwitch.app/Contents/MacOS/
+          
+          # Make sure executable has correct permissions
+          chmod +x build/MonitorSwitch.app/Contents/MacOS/MonitorSwitch
       - name: Sign macOS app (ad-hoc)
         run: |
           # Ad-hoc sign the app bundle with free certificate
@@ -45,6 +65,11 @@ jobs:
           # Test that the app is properly signed
           echo "Testing app signature validity..."
           spctl --assess --type exec build/MonitorSwitch.app || echo "Note: App assessment failed (expected for ad-hoc signed apps)"
+          
+          # Verify app bundle is still intact after signing
+          echo "App bundle after signing:"
+          ls -la build/MonitorSwitch.app/Contents/MacOS/
+          file build/MonitorSwitch.app/Contents/MacOS/MonitorSwitch
       - name: Create ZIP package
         run: |
           # Create a temporary directory for packaging
