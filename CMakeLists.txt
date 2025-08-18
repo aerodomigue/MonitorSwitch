@@ -87,6 +87,9 @@ if(WIN32)
     # Add Windows resource file for icon and version info
     # WIN32 flag creates a Windows GUI application (no console window)
     add_executable(MonitorSwitch WIN32 ${COMMON_SOURCES} ${PLATFORM_SOURCES} MonitorSwitch.rc)
+elseif(APPLE)
+    # Create macOS app bundle
+    add_executable(MonitorSwitch MACOSX_BUNDLE ${COMMON_SOURCES} ${PLATFORM_SOURCES})
 else()
     add_executable(MonitorSwitch ${COMMON_SOURCES} ${PLATFORM_SOURCES})
 endif()
