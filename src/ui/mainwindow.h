@@ -54,6 +54,7 @@ private:
     void populateDeviceList();
     void setupConnections();
     void closeEvent(QCloseEvent *event) override;
+    void showEvent(QShowEvent *event) override;
 
     // UI Components
     QTabWidget* m_tabWidget;

@@ -10,6 +10,7 @@
 #include <QLabel>
 #include <QMessageBox>
 #include <QCloseEvent>
+#include <QShowEvent>
 #include <QDateTime>
 #include <QHeaderView>
 #include <QSplitter>
@@ -415,16 +416,18 @@ void MainWindow::populateDeviceList() {
 }
 
 void MainWindow::changeEvent(QEvent* event) {
-    if (event->type() == QEvent::WindowStateChange) {
-        if (isMinimized()) {
 #ifdef Q_OS_MAC
-            // On macOS, hide the window when minimized to avoid dock icon
+    if (event->type() == QEvent::WindowStateChange) {
+        // On macOS, prevent minimization to dock by hiding the window instead
+        if (windowState() & Qt::WindowMinimized) {
+            // Don't call the parent implementation, handle it ourselves
+            setWindowState(windowState() & ~Qt::WindowMinimized);
             hide();
-            event->ignore();
+            event->accept();
             return;
-#endif
         }
     }
+#endif
     QMainWindow::changeEvent(event);
 }
 
@@ -439,6 +442,16 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 #endif
     // Default behavior for other platforms or programmatic close
     QMainWindow::closeEvent(event);
+}
+
+void MainWindow::showEvent(QShowEvent *event) {
+#ifdef Q_OS_MAC
+    // On macOS, ensure window is in normal state when showing
+    if (isMinimized()) {
+        setWindowState(windowState() & ~Qt::WindowMinimized);
+    }
+#endif
+    QMainWindow::showEvent(event);
 }
 
 void MainWindow::logMessage(const QString& message) {

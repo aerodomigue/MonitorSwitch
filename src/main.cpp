@@ -2,6 +2,9 @@
 #ifdef Q_OS_MAC
 #include <objc/objc-runtime.h>
 #endif
+#ifdef _WIN32
+#include <windows.h>
+#endif
 #include <QSystemTrayIcon>
 #include <QMenu>
 #include <QAction>
@@ -11,18 +14,40 @@
 #include <QCoreApplication>
 #include <QMetaObject>
 #include <QStyle>
+#include <QDir>
+#include <QFile>
+#ifdef _WIN32
+#include <QImage>
+#endif
 #include "ui/mainwindow.h"
 #include "core/application.h"
 #include "../include/config.h"
 #include <iostream>
 
+#ifdef _WIN32
+// Helper function to get the application icon on Windows
+QIcon getWindowsAppIcon() {
+    // Try to get the icon from the executable
+    HICON hIcon = ExtractIcon(GetModuleHandle(nullptr), 
+                              reinterpret_cast<LPCWSTR>(QCoreApplication::applicationFilePath().utf16()), 0);
+    if (hIcon && hIcon != (HICON)1) {
+        // Convert to QIcon using Qt's built-in conversion
+        QPixmap pixmap = QPixmap::fromImage(QImage::fromHICON(hIcon));
+        DestroyIcon(hIcon);
+        if (!pixmap.isNull()) {
+            return QIcon(pixmap);
+        }
+    }
+    return QIcon();
+}
+#endif
+
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
 #ifdef Q_OS_MAC
-    // Hide Dock icon, only show in menu bar
-    id nsApp = ((id (*)(Class, SEL))objc_msgSend)(objc_getClass("NSApplication"), sel_registerName("sharedApplication"));
-    ((void (*)(id, SEL, int))objc_msgSend)(nsApp, sel_registerName("setActivationPolicy:"), 1 /* NSApplicationActivationPolicyAccessory */);
+    // On macOS, we'll manage the dock icon dynamically
+    // Don't hide it at startup to avoid issues
 #endif
     
     // Set application properties
@@ -79,21 +104,40 @@ int main(int argc, char *argv[]) {
     // Windows and Linux icon loading with multiple fallbacks
     QIcon appIcon;
     
-    // Try different icon paths in order of preference
-    QStringList iconPaths = {
-        QCoreApplication::applicationDirPath() + "/icons/MonitorSwitch.ico",  // Windows ICO in app dir
-        QCoreApplication::applicationDirPath() + "/icons/MonitorSwitch.png",  // PNG in app dir
-        QCoreApplication::applicationDirPath() + "/icons/MonitorSwitch_icon.svg", // SVG in app dir
-        "icons/MonitorSwitch.ico",     // Relative ICO
-        "icons/MonitorSwitch.png",     // Relative PNG  
-        "icons/MonitorSwitch_icon.svg" // Relative SVG
-    };
+    // Debug: print current directory and paths
+    qDebug() << "Current working directory:" << QDir::currentPath();
+    qDebug() << "Application directory:" << QCoreApplication::applicationDirPath();
     
-    for (const QString& path : iconPaths) {
-        appIcon = QIcon(path);
-        if (!appIcon.isNull()) {
-            qDebug() << "Successfully loaded icon from:" << path;
-            break;
+#ifdef _WIN32
+    // First, try to get the icon from the Windows executable
+    appIcon = getWindowsAppIcon();
+    if (!appIcon.isNull()) {
+        qDebug() << "Successfully loaded icon from Windows executable";
+    }
+#endif
+    
+    // If no executable icon found, try file paths
+    if (appIcon.isNull()) {
+        // Try different icon paths in order of preference
+        QStringList iconPaths = {
+            QCoreApplication::applicationDirPath() + "/icons/MonitorSwitch.ico",  // Windows ICO in app dir
+            QCoreApplication::applicationDirPath() + "/icons/MonitorSwitch.png",  // PNG in app dir
+            QCoreApplication::applicationDirPath() + "/icons/MonitorSwitch_icon.svg", // SVG in app dir
+            "icons/MonitorSwitch.ico",     // Relative ICO
+            "icons/MonitorSwitch.png",     // Relative PNG  
+            "icons/MonitorSwitch_icon.svg" // Relative SVG
+        };
+        
+        for (const QString& path : iconPaths) {
+            qDebug() << "Trying icon path:" << path;
+            qDebug() << "File exists:" << QFile::exists(path);
+            appIcon = QIcon(path);
+            if (!appIcon.isNull()) {
+                qDebug() << "Successfully loaded icon from:" << path;
+                break;
+            } else {
+                qDebug() << "Failed to load icon from:" << path;
+            }
         }
     }
     
@@ -101,6 +145,7 @@ int main(int argc, char *argv[]) {
         qWarning() << "Could not load application icon from any path";
         // Create a default icon as fallback
         appIcon = qApp->style()->standardIcon(QStyle::SP_ComputerIcon);
+        qDebug() << "Using default system icon as fallback";
     }
 #endif
     app.setWindowIcon(appIcon);
@@ -171,8 +216,11 @@ int main(int argc, char *argv[]) {
     // Show tray icon
     trayIcon.show();
     
-    // Always show the device manager window on startup (Linux/Windows)
+#ifndef Q_OS_MAC
+    // Show the device manager window on startup (Linux/Windows only)
+    // On macOS, the app starts hidden in system tray
     mainWindow.showDeviceManager();
+#endif
 
     // Now that UI is ready, load configuration
     coreApplication.startConfiguration();

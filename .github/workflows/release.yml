@@ -121,6 +121,12 @@ jobs:
           # Use windeployqt to bundle Qt libraries
           windeployqt.exe --release --no-translations --no-system-d3d-compiler --no-opengl-sw deploy\MonitorSwitch.exe
           
+          # Copy icons to deployment directory
+          mkdir deploy\icons
+          copy icons\MonitorSwitch.ico deploy\icons\
+          copy icons\MonitorSwitch.png deploy\icons\
+          copy icons\MonitorSwitch_icon.svg deploy\icons\
+          
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
