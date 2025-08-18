@@ -85,7 +85,8 @@ file(GLOB_RECURSE HEADERS
 # Create executable
 if(WIN32)
     # Add Windows resource file for icon and version info
-    add_executable(MonitorSwitch ${COMMON_SOURCES} ${PLATFORM_SOURCES} MonitorSwitch.rc)
+    # WIN32 flag creates a Windows GUI application (no console window)
+    add_executable(MonitorSwitch WIN32 ${COMMON_SOURCES} ${PLATFORM_SOURCES} MonitorSwitch.rc)
 else()
     add_executable(MonitorSwitch ${COMMON_SOURCES} ${PLATFORM_SOURCES})
 endif()

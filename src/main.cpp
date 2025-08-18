@@ -17,6 +17,7 @@
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
+
 #ifdef Q_OS_MAC
     // Hide Dock icon, only show in menu bar
     id nsApp = ((id (*)(Class, SEL))objc_msgSend)(objc_getClass("NSApplication"), sel_registerName("sharedApplication"));
@@ -49,9 +50,9 @@ int main(int argc, char *argv[]) {
         qWarning() << "System tray not available on macOS, showing window instead";
         mainWindow.showDeviceManager();
 #else
-        QMessageBox::critical(nullptr, "System Tray",
-                             "System tray is not available on this system.");
-        return 1;
+        // On Windows/Linux, if tray is not available, show window and continue
+        qWarning() << "System tray not available, showing window instead";
+        mainWindow.showDeviceManager();
 #endif
     }
     
