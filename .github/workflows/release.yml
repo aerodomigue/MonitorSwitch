@@ -7,6 +7,10 @@ on:
     tags:
       - 'RELEASE_V*'
 
+permissions:
+  contents: write
+  packages: write
+
 jobs:
   build-macos:
     runs-on: macos-latest
@@ -23,6 +27,17 @@ jobs:
         run: |
           cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_VERBOSE_MAKEFILE=ON
           cmake --build build -- -v
+      - name: Sign macOS app (ad-hoc)
+        run: |
+          # Ad-hoc sign the app bundle to make it runnable
+          # Users will need to right-click -> Open to bypass Gatekeeper warning
+          codesign --force --deep --sign - build/MonitorSwitch.app
+          
+          # Verify the signature
+          codesign --verify --verbose build/MonitorSwitch.app
+          
+          # Check what we signed
+          codesign --display --verbose build/MonitorSwitch.app
       - name: Create DMG
         run: |
           # Create a temporary directory for DMG contents
@@ -32,11 +47,28 @@ jobs:
           # Create a symbolic link to Applications folder
           ln -s /Applications dmg_temp/Applications
           
+          # Create installation instructions
+          cat > dmg_temp/INSTALL.txt << 'EOF'
+          MonitorSwitch Installation Instructions
+          =====================================
+          
+          1. Drag MonitorSwitch.app to the Applications folder
+          2. The first time you open the app, right-click on it and select "Open"
+          3. Click "Open" when macOS asks for confirmation
+          4. The app will then run normally from future launches
+          
+          Note: This app is ad-hoc signed for distribution. The warning is expected.
+          EOF
+          
           # Create the DMG
           hdiutil create -volname "MonitorSwitch" -srcfolder dmg_temp -ov -format UDZO build/MonitorSwitch.dmg
           
-          # Verify the DMG was created
+          # Sign the DMG as well
+          codesign --force --sign - build/MonitorSwitch.dmg
+          
+          # Verify the DMG was created and signed
           ls -la build/MonitorSwitch.dmg
+          codesign --verify --verbose build/MonitorSwitch.dmg
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v4
         with:
