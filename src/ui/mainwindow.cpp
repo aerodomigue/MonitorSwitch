@@ -427,18 +427,18 @@ void MainWindow::populateDeviceList() {
 }
 
 void MainWindow::changeEvent(QEvent* event) {
-#ifdef Q_OS_MAC
     if (event->type() == QEvent::WindowStateChange) {
-        // On macOS, prevent minimization to dock by hiding the window instead
+        // On all platforms, minimize to system tray instead of taskbar
         if (windowState() & Qt::WindowMinimized) {
-            // Don't call the parent implementation, handle it ourselves
+#ifdef Q_OS_MAC
+            // On macOS, prevent minimization to dock by hiding the window instead
             setWindowState(windowState() & ~Qt::WindowMinimized);
+#endif
             hide();
             event->accept();
             return;
         }
     }
-#endif
     QMainWindow::changeEvent(event);
 }
 
