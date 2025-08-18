@@ -176,9 +176,19 @@ int main(int argc, char *argv[]) {
     
     QAction *showAction = trayMenu.addAction("Show");
     QObject::connect(showAction, &QAction::triggered, [&mainWindow]() {
+        // First restore the window if it's minimized
+        if (mainWindow.isMinimized()) {
+            mainWindow.setWindowState(mainWindow.windowState() & ~Qt::WindowMinimized);
+        }
+        
         mainWindow.show();
         mainWindow.raise();
         mainWindow.activateWindow();
+        
+#ifdef Q_OS_WIN
+        // On Windows, force the window to the foreground
+        mainWindow.setWindowState(Qt::WindowActive);
+#endif
     });
     
     trayMenu.addSeparator();
@@ -207,23 +217,34 @@ int main(int argc, char *argv[]) {
     QObject::connect(&trayIcon, &QSystemTrayIcon::activated, 
                      [&mainWindow](QSystemTrayIcon::ActivationReason reason) {
         if (reason == QSystemTrayIcon::DoubleClick) {
+            // First restore the window if it's minimized
+            if (mainWindow.isMinimized()) {
+                mainWindow.setWindowState(mainWindow.windowState() & ~Qt::WindowMinimized);
+            }
+            
             mainWindow.show();
             mainWindow.raise();
             mainWindow.activateWindow();
+            
+#ifdef Q_OS_WIN
+            // On Windows, force the window to the foreground
+            mainWindow.setWindowState(Qt::WindowActive);
+#endif
         }
     });
     
     // Show tray icon
     trayIcon.show();
     
-#ifndef Q_OS_MAC
-    // Show the device manager window on startup (Linux/Windows only)
-    // On macOS, the app starts hidden in system tray
-    mainWindow.showDeviceManager();
-#endif
-
-    // Now that UI is ready, load configuration
+    // Load configuration first to check startup preferences
     coreApplication.startConfiguration();
+
+    // Show the device manager window on startup unless start minimized is enabled
+    // On macOS, the app starts hidden in system tray
+    if (!coreApplication.isStartMinimizedEnabled()) {
+        mainWindow.showDeviceManager();
+    }
+
     
     // Update UI immediately after configuration loading
     mainWindow.updateDeviceList();

@@ -222,6 +222,15 @@ bool Application::isAutostartEnabled() const {
     return m_autostartService->isAutostartEnabled();
 }
 
+void Application::setStartMinimized(bool enable) {
+    m_config.startMinimized = enable;
+    saveConfiguration();
+}
+
+bool Application::isStartMinimizedEnabled() const {
+    return m_config.startMinimized;
+}
+
 void Application::testScreenControl(std::function<void(bool)> onComplete) {
     if (!m_displayService) {
         std::cerr << "[SCREEN TEST] Display service not available" << std::endl;
@@ -339,6 +348,7 @@ void Application::loadConfiguration() {
     
     std::cout << "[APP] Configuration loaded:" << std::endl;
     std::cout << "[APP]   - Start on boot: " << (m_config.startOnBoot ? "Yes" : "No") << std::endl;
+    std::cout << "[APP]   - Start minimized: " << (m_config.startMinimized ? "Yes" : "No") << std::endl;
     std::cout << "[APP]   - Selected device: " << (m_config.selectedDeviceId.empty() ? "None" : m_config.selectedDeviceId) << std::endl;
     std::cout << "[APP]   - Screen off delay: " << m_config.screenOffDelay << " seconds" << std::endl;
     std::cout << "[APP]   - Known devices count: " << m_config.knownDevices.size() << std::endl;

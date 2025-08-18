@@ -77,6 +77,18 @@ public:
     bool isAutostartEnabled() const;
 
     /**
+     * Set start minimized option
+     * @param enable true to start minimized, false to start normally
+     */
+    void setStartMinimized(bool enable);
+
+    /**
+     * Check if start minimized is enabled
+     * @return true if enabled, false otherwise
+     */
+    bool isStartMinimizedEnabled() const;
+
+    /**
      * Test screen control by turning display off for 1 second then back on
      * @param onComplete callback to execute when test completes
      */

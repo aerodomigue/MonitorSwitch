@@ -51,6 +51,8 @@ AppConfig StorageService::loadConfig() {
                 
                 if (key == "startOnBoot") {
                     config.startOnBoot = (value == "true" || value == "1");
+                } else if (key == "startMinimized") {
+                    config.startMinimized = (value == "true" || value == "1");
                 } else if (key == "selectedDeviceId") {
                     config.selectedDeviceId = value;
                 } else if (key == "screenOffDelay") {
@@ -81,6 +83,7 @@ bool StorageService::saveConfig(const AppConfig& config) {
         file << "# Generated automatically - do not edit manually\n\n";
         
         file << "startOnBoot=" << (config.startOnBoot ? "true" : "false") << "\n";
+        file << "startMinimized=" << (config.startMinimized ? "true" : "false") << "\n";
         file << "selectedDeviceId=" << config.selectedDeviceId << "\n";
         file << "screenOffDelay=" << config.screenOffDelay << "\n";
         

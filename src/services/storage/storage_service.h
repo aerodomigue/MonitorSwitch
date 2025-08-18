@@ -12,11 +12,12 @@
  */
 struct AppConfig {
     bool startOnBoot;
+    bool startMinimized;
     std::string selectedDeviceId;
     int screenOffDelay;
     std::vector<std::string> knownDevices;
     
-    AppConfig() : startOnBoot(true), screenOffDelay(10) {}
+    AppConfig() : startOnBoot(true), startMinimized(false), screenOffDelay(10) {}
 };
 
 /**

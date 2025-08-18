@@ -73,6 +73,8 @@ void MainWindow::showDeviceManager() {
 
 void MainWindow::showSettings() {
     m_tabWidget->setCurrentWidget(m_settingsTab);
+    // Always restore window state to normal before showing
+    setWindowState((windowState() & ~Qt::WindowMinimized) | Qt::WindowActive);
     show();
     raise();
     activateWindow();
@@ -194,6 +196,9 @@ void MainWindow::createSettingsTab() {
     m_autostartCheckbox = new QCheckBox("Start application on Windows boot");
     autostartLayout->addWidget(m_autostartCheckbox);
     
+    m_startMinimizedCheckbox = new QCheckBox("Start minimized to system tray");
+    autostartLayout->addWidget(m_startMinimizedCheckbox);
+    
     layout->addWidget(autostartGroup);
     
     // Screen control settings
@@ -266,6 +271,8 @@ void MainWindow::setupConnections() {
     // Settings connections
     connect(m_autostartCheckbox, &QCheckBox::toggled, 
             this, &MainWindow::onAutostartToggled);
+    connect(m_startMinimizedCheckbox, &QCheckBox::toggled,
+            this, &MainWindow::onStartMinimizedToggled);
     connect(m_screenDelaySpinBox, QOverload<int>::of(&QSpinBox::valueChanged),
             this, &MainWindow::onScreenDelayChanged);
     connect(m_testScreenButton, &QPushButton::clicked, 
@@ -305,6 +312,13 @@ void MainWindow::onAutostartToggled(bool enabled) {
             // Revert checkbox state
             m_autostartCheckbox->setChecked(!enabled);
         }
+    }
+}
+
+void MainWindow::onStartMinimizedToggled(bool enabled) {
+    if (m_application) {
+        m_application->setStartMinimized(enabled);
+        logMessage(enabled ? "Start minimized enabled" : "Start minimized disabled");
     }
 }
 
@@ -359,11 +373,16 @@ void MainWindow::updateStatus() {
     // Update settings from application state
     if (m_application) {
         bool autostartEnabled = m_application->isAutostartEnabled();
+        bool startMinimizedEnabled = m_application->isStartMinimizedEnabled();
         
-        // Block signals to prevent triggering onAutostartToggled when setting initial state
+        // Block signals to prevent triggering callbacks when setting initial state
         m_autostartCheckbox->blockSignals(true);
         m_autostartCheckbox->setChecked(autostartEnabled);
         m_autostartCheckbox->blockSignals(false);
+        
+        m_startMinimizedCheckbox->blockSignals(true);
+        m_startMinimizedCheckbox->setChecked(startMinimizedEnabled);
+        m_startMinimizedCheckbox->blockSignals(false);
         
         // Update selected device display
         std::string selectedDeviceId = m_application->getSelectedDevice();

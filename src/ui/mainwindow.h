@@ -39,6 +39,7 @@ private slots:
     void onDeviceSelectionChanged();
     void onSelectDeviceClicked();
     void onAutostartToggled(bool enabled);
+    void onStartMinimizedToggled(bool enabled);
     void onScreenDelayChanged(int delay);
     void onRefreshDevicesClicked();
     void onTestScreenControlClicked();
@@ -70,6 +71,7 @@ private:
     // Settings Tab
     QWidget* m_settingsTab;
     QCheckBox* m_autostartCheckbox;
+    QCheckBox* m_startMinimizedCheckbox;
     QSpinBox* m_screenDelaySpinBox;
     QPushButton* m_testScreenButton;
     
