@@ -1,6 +1,6 @@
 #include "mainwindow.h"
-#include "../core/application.h"
-#include "../services/usb/usb_service.h"
+#include "core/application.h"
+#include "services/usb/usb_service.h"
 #include "config.h"
 #include <QVBoxLayout>
 #include <QLineEdit>

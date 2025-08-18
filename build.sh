@@ -29,6 +29,7 @@ cd build
 
 # Install dependencies based on platform
 echo "Checking dependencies..."
+
 if [[ "$PLATFORM" == "Linux" ]]; then
     if command -v apt-get &> /dev/null; then
         echo "Installing dependencies with apt..."

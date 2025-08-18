@@ -7,7 +7,7 @@
     "source=${env:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached"
   ],
   "remoteUser": "vscode",
-  "postCreateCommand": "sudo chown -R vscode:vscode /home/vscode/.ssh && chmod 700 /home/vscode/.ssh && chmod 600 /home/vscode/.ssh/*",
+  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y qt6-base-dev qt6-tools-dev libqt6widgets6 && sudo chown -R vscode:vscode /home/vscode/.ssh && chmod 700 /home/vscode/.ssh && chmod 600 /home/vscode/.ssh/*",
   "customizations": {
     "vscode": {
       "extensions": [

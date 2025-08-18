@@ -24,10 +24,6 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
-# Include directories
-include_directories(include)
-include_directories(src)
-
 # Collect common source files
 file(GLOB_RECURSE COMMON_SOURCES
     src/main.cpp
@@ -80,7 +76,13 @@ file(GLOB_RECURSE HEADERS
 )
 
 # Create executable
-add_executable(MonitorSwitch ${COMMON_SOURCES} ${PLATFORM_SOURCES} ${HEADERS})
+add_executable(MonitorSwitch ${COMMON_SOURCES} ${PLATFORM_SOURCES})
+
+# Set include directories for the target
+target_include_directories(MonitorSwitch PRIVATE 
+    "src"
+    "include"
+)
 
 # Link Qt libraries
 target_link_libraries(MonitorSwitch 

@@ -68,7 +68,8 @@ MonitorSwitch.exe
 Thumbs.db
 
 # IDE files
-.vscode/
+# .vscode/ - Commented out for dev container setup
+# Keep VS Code config for consistent dev container environment
 .vs/
 .idea/
 *.vcxproj*
@@ -81,6 +82,10 @@ Thumbs.db
 *.opt
 *.clw
 *.tags
+
+# VS Code user-specific files (if any)
+.vscode/settings.json.user
+.vscode/launch.json.user
 
 # Xcode
 *.pbxuser
@@ -207,7 +212,7 @@ cppcheck-result.xml
 *.sarif
 
 # Clang tools
-compile_commands.json
+# compile_commands.json - Keep for VS Code IntelliSense in dev containers
 .clangd/
 .cache/
 
