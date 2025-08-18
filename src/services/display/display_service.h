@@ -9,11 +9,11 @@
 #include <memory>
 #include "config.h"
 
-#ifdef PLATFORM_WINDOWS
+#ifdef _WIN32
     #include <windows.h>
-#elif defined(PLATFORM_LINUX)
+#elif defined(__linux__)
     // Include X11 headers after Qt headers in source file to avoid macro conflicts
-#elif defined(PLATFORM_MACOS)
+#elif defined(__APPLE__)
     #include <CoreGraphics/CoreGraphics.h>
 #endif
 
@@ -75,7 +75,7 @@ private:
     // Helper method to log messages
     void log(const std::string& message);
     
-#ifdef PLATFORM_WINDOWS
+#ifdef _WIN32
     HANDLE m_scheduledTaskHandle;
 #else
     void* m_scheduledTaskHandle;  // Placeholder for compatibility

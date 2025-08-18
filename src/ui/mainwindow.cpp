@@ -28,11 +28,11 @@ MainWindow::MainWindow(QWidget *parent)
     setupConnections();
     
     // Log platform information to UI
-#ifdef PLATFORM_WINDOWS
+#ifdef _WIN32
     logMessage("Platform: Windows");
-#elif defined(PLATFORM_MACOS)
+#elif defined(__APPLE__)
     logMessage("Platform: macOS");
-#elif defined(PLATFORM_LINUX)
+#elif defined(__linux__)
     logMessage("Platform: Linux");
 #else
     logMessage("Platform: Unknown");

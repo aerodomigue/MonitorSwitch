@@ -16,7 +16,7 @@ std::vector<UsbDevice> Application::getConnectedUsbDevices() const {
     return {};
 }
 
-#ifdef PLATFORM_WINDOWS
+#ifdef _WIN32
 #include <windows.h>
 #endif
 
@@ -63,13 +63,13 @@ bool Application::initialize() {
     std::cout << "Initializing " << APP_NAME << "..." << std::endl;
     
     // Display current platform with detailed information
-#ifdef PLATFORM_WINDOWS
+#ifdef _WIN32
     std::cout << "[PLATFORM] Running on: Windows" << std::endl;
     std::cout << "[PLATFORM] Platform features: Win32 API, Registry autostart, DPMS display control" << std::endl;
-#elif defined(PLATFORM_MACOS)
+#elif defined(__APPLE__)
     std::cout << "[PLATFORM] Running on: macOS" << std::endl;
     std::cout << "[PLATFORM] Platform features: IOKit, launchd autostart, CoreGraphics display control" << std::endl;
-#elif defined(PLATFORM_LINUX)
+#elif defined(__linux__)
     std::cout << "[PLATFORM] Running on: Linux" << std::endl;
     std::cout << "[PLATFORM] Platform features: X11/udev, XDG autostart, DPMS display control" << std::endl;
 #else
@@ -133,7 +133,7 @@ int Application::run() {
     std::cout << "Application running. Selected device: " 
               << (m_selectedDeviceId.empty() ? "None" : m_selectedDeviceId) << std::endl;
     
-#ifdef PLATFORM_WINDOWS
+#ifdef _WIN32
     // Windows message loop
     MSG msg;
     while (m_isRunning && GetMessage(&msg, nullptr, 0, 0)) {
@@ -183,7 +183,7 @@ std::string Application::getSelectedDevice() const {
 
 bool Application::setAutostart(bool enable) {
     if (enable) {
-#ifdef PLATFORM_WINDOWS
+#ifdef _WIN32
         // Get current executable path
         wchar_t exePath[MAX_PATH];
         GetModuleFileName(nullptr, exePath, MAX_PATH);

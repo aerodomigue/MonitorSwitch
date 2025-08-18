@@ -21,17 +21,8 @@ const std::string DATA_SAVE_PATH = "aerodomigue/MonitorSwitch";
 // Screen control settings
 const int SCREEN_OFF_DELAY_SECONDS = 10;
 
-// Platform detection
-#ifdef _WIN32
-    #define PLATFORM_WINDOWS
-#elif __APPLE__
-    #define PLATFORM_MACOS
-    #include <TargetConditionals.h>
-#elif __linux__
-    #define PLATFORM_LINUX
-#else
-    #define PLATFORM_UNKNOWN
-#endif
+// Note: Platform detection macros (PLATFORM_WINDOWS, PLATFORM_MACOS, PLATFORM_LINUX) 
+// are now defined in CMakeLists.txt to avoid redefinition warnings
 
 // Other configuration options can be added here
 

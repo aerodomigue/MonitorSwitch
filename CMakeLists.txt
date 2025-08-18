@@ -85,6 +85,15 @@ file(GLOB_RECURSE HEADERS
 # Create executable
 add_executable(MonitorSwitch ${COMMON_SOURCES} ${PLATFORM_SOURCES})
 
+# Define platform macros for compatibility with existing code
+if(WIN32)
+    target_compile_definitions(MonitorSwitch PRIVATE PLATFORM_WINDOWS)
+elseif(APPLE)
+    target_compile_definitions(MonitorSwitch PRIVATE PLATFORM_MACOS)
+elseif(UNIX)
+    target_compile_definitions(MonitorSwitch PRIVATE PLATFORM_LINUX)
+endif()
+
 # Set include directories for the target (put ours before system paths)
 target_include_directories(MonitorSwitch BEFORE PRIVATE 
     "${CMAKE_CURRENT_SOURCE_DIR}"

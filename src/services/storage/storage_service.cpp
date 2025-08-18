@@ -16,6 +16,10 @@ StorageService::StorageService() {
 StorageService::~StorageService() {
 }
 
+void StorageService::setLogCallback(std::function<void(const std::string&)> logCallback) {
+    m_logCallback = logCallback;
+}
+
 bool StorageService::initialize() {
     m_appDataPath = getAppDataPath();
     return ensureAppDataDirectory();
@@ -220,4 +224,14 @@ bool StorageService::createDirectoryRecursive(const std::string& path) {
 
 bool StorageService::fileExists(const std::string& filePath) {
     return std::filesystem::exists(filePath);
+}
+
+void StorageService::log(const std::string& message) {
+    // Always log to console
+    std::cout << "[CONFIG] " << message << std::endl;
+    
+    // Also log to UI if callback is set
+    if (m_logCallback) {
+        m_logCallback(message);
+    }
 }

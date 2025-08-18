@@ -1,9 +1,16 @@
 #ifndef USB_SERVICE_H
 #define USB_SERVICE_H
 
-#ifdef PLATFORM_WINDOWS
-#include <windows.h>
+#ifdef _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
 #endif
+#include <windows.h>
+#include <setupapi.h>
+#include <devguid.h>
+#include <dbt.h>
+#endif
+
 #include "config.h"
 #include <vector>
 #include <string>
@@ -85,7 +92,7 @@ public:
     void stopMonitoring();
 
 private:
-#ifdef PLATFORM_WINDOWS
+#ifdef _WIN32
     static LRESULT CALLBACK windowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
     void handleDeviceChange(WPARAM wParam, LPARAM lParam);
 #else
@@ -96,7 +103,7 @@ private:
     std::vector<UsbDevice> enumerateUsbDevices();
     UsbDevice getDeviceInfo(const std::string& devicePath);
     
-#ifdef PLATFORM_WINDOWS    
+#ifdef _WIN32    
     HWND m_hiddenWindow;
     HDEVNOTIFY m_deviceNotification;
 #else
