@@ -1,0 +1,224 @@
+# Build directories
+build/
+build-*/
+debug/
+release/
+bin/
+obj/
+out/
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+!CMakeLists.txt
+
+# Qt generated files
+moc_*.cpp
+moc_*.h
+ui_*.h
+qrc_*.cpp
+*.moc
+*_moc.cpp
+*.qm
+*.ts
+*.pro.user*
+*.pri.user*
+
+# Qt Creator files
+*.pro.user
+*.pro.user.*
+*.qbs.user
+*.qbs.user.*
+*.moc
+*.mocs
+
+# Platform specific executables
+*.exe
+*.app
+*.dmg
+*.deb
+*.rpm
+MonitorSwitch
+MonitorSwitch.exe
+
+# Object files
+*.o
+*.obj
+*.so
+*.dylib
+*.dll
+*.lib
+*.a
+
+# Debug files
+*.pdb
+*.ilk
+*.exp
+
+# Temporary files
+*.tmp
+*.temp
+*~
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.vs/
+.idea/
+*.vcxproj*
+*.sln
+*.suo
+*.user
+*.ncb
+*.aps
+*.plg
+*.opt
+*.clw
+*.tags
+
+# Xcode
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+xcuserdata/
+*.xccheckout
+*.moved-aside
+DerivedData
+*.hmap
+*.ipa
+*.xcuserstate
+
+# Backup files
+*.bak
+*.backup
+*.orig
+
+# Log files
+*.log
+
+# Auto-generated documentation
+docs/html/
+docs/latex/
+
+# Package managers
+node_modules/
+.npm/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Coverage reports
+coverage/
+*.gcov
+*.gcda
+*.gcno
+
+# Profiling data
+*.prof
+gmon.out
+
+# Core dumps
+core
+*.core
+
+# macOS specific
+.AppleDouble
+.LSOverride
+Icon?
+
+# Windows specific
+*.lnk
+ehthumbs.db
+Desktop.ini
+
+# Linux specific
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# Configuration files (might contain sensitive data)
+config.ini
+settings.ini
+*.conf
+
+# Auto-generated version files
+version.h
+version.cpp
+
+# Test results
+test_results/
+*.xml
+*.junit
+
+# Dependency directories
+third_party/
+external/
+deps/
+vendor/
+
+# Archives
+*.zip
+*.tar.gz
+*.tar.bz2
+*.rar
+*.7z
+
+# Installer packages
+*.msi
+*.pkg
+*.deb
+*.rpm
+*.dmg
+*.iso
+
+# Generated resource files
+resources.qrc
+*.rcc
+
+# Autosave files
+*autosave*
+*.tmp
+
+# Qt Designer backup files
+*.ui.bak
+
+# Translation files
+*.ts
+*.qm
+
+# Precompiled headers
+*.pch
+*.gch
+
+# Static analysis
+cppcheck-result.xml
+*.sarif
+
+# Clang tools
+compile_commands.json
+.clangd/
+.cache/
+
+# GDB history
+.gdb_history
+
+# Valgrind
+*.valgrind
+vgcore.*
+
+# Sanitizer files
+*.asan
+*.msan
+*.tsan
+*.ubsan
