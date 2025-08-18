@@ -83,7 +83,12 @@ file(GLOB_RECURSE HEADERS
 )
 
 # Create executable
-add_executable(MonitorSwitch ${COMMON_SOURCES} ${PLATFORM_SOURCES})
+if(WIN32)
+    # Add Windows resource file for icon and version info
+    add_executable(MonitorSwitch ${COMMON_SOURCES} ${PLATFORM_SOURCES} MonitorSwitch.rc)
+else()
+    add_executable(MonitorSwitch ${COMMON_SOURCES} ${PLATFORM_SOURCES})
+endif()
 
 # Define platform macros for compatibility with existing code
 if(WIN32)
@@ -165,6 +170,11 @@ elseif(UNIX AND NOT APPLE)
     install(TARGETS MonitorSwitch RUNTIME DESTINATION bin)
     install(FILES MonitorSwitch.desktop DESTINATION share/applications)
     install(FILES icons/MonitorSwitch.png DESTINATION share/icons/hicolor/64x64/apps)
+elseif(WIN32)
+    # Windows installation
+    install(TARGETS MonitorSwitch RUNTIME DESTINATION .)
+    install(DIRECTORY icons/ DESTINATION icons FILES_MATCHING PATTERN "*.ico" PATTERN "*.png" PATTERN "*.svg")
+    install(FILES README.md DESTINATION . OPTIONAL)
 else()
     install(TARGETS MonitorSwitch RUNTIME DESTINATION bin)
 endif()

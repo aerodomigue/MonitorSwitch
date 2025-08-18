@@ -100,12 +100,32 @@ jobs:
         uses: actions/checkout@v4
       - name: Build (Windows)
         run: |
-          .\build.bat
+          # Create build directory
+          mkdir build
+          cd build
+          
+          # Configure with CMake using Visual Studio generator
+          cmake -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release ..
+          
+          # Build the project
+          cmake --build . --config Release
+          
+      - name: Deploy Qt libraries (Windows)
+        run: |
+          # Create deployment directory
+          mkdir deploy
+          
+          # Copy executable to deployment directory
+          copy build\Release\MonitorSwitch.exe deploy\
+          
+          # Use windeployqt to bundle Qt libraries
+          windeployqt.exe --release --no-translations --no-system-d3d-compiler --no-opengl-sw deploy\MonitorSwitch.exe
+          
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
           name: MonitorSwitch-Windows
-          path: build\Release\MonitorSwitch.exe
+          path: deploy\
 
   build-linux:
     runs-on: ubuntu-latest

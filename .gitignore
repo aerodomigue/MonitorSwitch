@@ -6,6 +6,7 @@ release/
 bin/
 obj/
 out/
+deploy/
 
 # CMake generated files
 CMakeCache.txt

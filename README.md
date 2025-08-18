@@ -114,6 +114,8 @@ cd MonitorSwitch
 build.bat
 ```
 
+The build script will automatically bundle all required Qt libraries and create a distributable package in `build\Release\deploy\`.
+
 #### Manual Build (Alternative)
 If you prefer to build manually:
 
