@@ -130,11 +130,31 @@ jobs:
           copy icons\MonitorSwitch.png deploy\icons\
           copy icons\MonitorSwitch_icon.svg deploy\icons\
           
-      - name: Upload Windows artifact
+      - name: Create Windows Installer
+        run: |
+          # Install Inno Setup
+          choco install innosetup -y
+          
+          # Create installer output directory
+          mkdir installer_output
+          
+          # Compile the installer
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" MonitorSwitch.iss
+          
+          # Verify installer was created
+          ls installer_output\
+          
+      - name: Upload Windows ZIP artifact
         uses: actions/upload-artifact@v4
         with:
-          name: MonitorSwitch-Windows
+          name: MonitorSwitch-Windows-Portable
           path: deploy\
+          
+      - name: Upload Windows Installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MonitorSwitch-Windows-Installer
+          path: installer_output\MonitorSwitch-Setup.exe
 
   build-linux:
     runs-on: ubuntu-latest
