@@ -129,14 +129,25 @@ void MainWindow::createDeviceManagerTab() {
     m_deviceList->setSelectionMode(QAbstractItemView::SingleSelection);
     
     // Set monospace font for better alignment
-    QFont monoFont("Consolas, Monaco, 'Lucida Console', monospace");
+    QFont monoFont;
+#ifdef _WIN32
+    // On Windows, avoid exactMatch() which can cause crashes
+    // Use common Windows monospace fonts directly
+    monoFont = QFont("Consolas");
+    if (monoFont.family() != "Consolas") {
+        monoFont = QFont("Courier New");
+    }
+#else
+    // On other platforms, use the original approach
+    monoFont = QFont("Consolas, Monaco, 'Lucida Console', monospace");
     if (monoFont.exactMatch()) {
-        m_deviceList->setFont(monoFont);
+        // Font is available as requested
     } else {
         // Fallback to system monospace font
         monoFont = QFont("monospace");
-        m_deviceList->setFont(monoFont);
     }
+#endif
+    m_deviceList->setFont(monoFont);
     
     deviceLayout->addWidget(m_deviceList);
     
