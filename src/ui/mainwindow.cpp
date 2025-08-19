@@ -323,8 +323,10 @@ void MainWindow::onStartMinimizedToggled(bool enabled) {
 }
 
 void MainWindow::onScreenDelayChanged(int delay) {
-    logMessage(QString("Screen delay changed to %1 seconds").arg(delay));
-    // The delay will be saved automatically when the application saves config
+    if (m_application) {
+        m_application->setScreenDelay(delay);
+        logMessage(QString("Screen delay changed to %1 seconds").arg(delay));
+    }
 }
 
 void MainWindow::onRefreshDevicesClicked() {
@@ -372,17 +374,23 @@ void MainWindow::updateStatus() {
     
     // Update settings from application state
     if (m_application) {
-        bool autostartEnabled = m_application->isAutostartEnabled();
-        bool startMinimizedEnabled = m_application->isStartMinimizedEnabled();
         
         // Block signals to prevent triggering callbacks when setting initial state
+        bool autostartEnabled = m_application->isAutostartEnabled();
         m_autostartCheckbox->blockSignals(true);
         m_autostartCheckbox->setChecked(autostartEnabled);
         m_autostartCheckbox->blockSignals(false);
         
+        bool startMinimizedEnabled = m_application->isStartMinimizedEnabled();
         m_startMinimizedCheckbox->blockSignals(true);
         m_startMinimizedCheckbox->setChecked(startMinimizedEnabled);
         m_startMinimizedCheckbox->blockSignals(false);
+        
+        // Update screen delay spinbox from configuration
+        int screenDelay = m_application->getScreenDelay();
+        m_screenDelaySpinBox->blockSignals(true);
+        m_screenDelaySpinBox->setValue(screenDelay);
+        m_screenDelaySpinBox->blockSignals(false);
         
         // Update selected device display
         std::string selectedDeviceId = m_application->getSelectedDevice();
@@ -462,14 +470,6 @@ void MainWindow::changeEvent(QEvent* event) {
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
-#ifdef Q_OS_MAC
-    // On macOS, hide to tray instead of closing
-    if (event->spontaneous()) {
-        hide();
-        event->ignore();
-        return;
-    }
-#endif
     // Default behavior for other platforms or programmatic close
     QMainWindow::closeEvent(event);
 }

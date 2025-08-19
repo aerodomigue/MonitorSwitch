@@ -135,6 +135,13 @@ if(WIN32)
         ole32
         advapi32
     )
+    
+    # Windows-specific properties for compatibility and manifest
+    set_target_properties(MonitorSwitch PROPERTIES
+        WIN32_EXECUTABLE TRUE
+        # Use application icon as the main icon
+        LINK_FLAGS "/SUBSYSTEM:WINDOWS"
+    )
 elseif(APPLE)
     target_link_libraries(MonitorSwitch 
         ${COCOA_LIBRARY}

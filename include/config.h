@@ -7,6 +7,7 @@
 
 // Option to start the application on boot
 const bool START_ON_BOOT = true;
+const bool START_MINIMIZED = false;
 
 // Application information
 const std::string APP_NAME = "MonitorSwitch";

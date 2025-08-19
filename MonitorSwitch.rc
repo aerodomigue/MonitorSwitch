@@ -6,9 +6,6 @@
 // Icon resource
 IDI_ICON1 ICON "icons/MonitorSwitch.ico"
 
-// Application manifest for Windows compatibility
-1 RT_MANIFEST "MonitorSwitch.manifest"
-
 // Version information
 VS_VERSION_INFO VERSIONINFO
 FILEVERSION 1,0,0,0
