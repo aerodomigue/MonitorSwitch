@@ -90,6 +90,9 @@ AppConfig StorageService::loadConfig() {
                 if (key == "startOnBoot") {
                     config.startOnBoot = (value == "true" || value == "1");
                     log("Set startOnBoot to: " + std::string(config.startOnBoot ? "true" : "false"));
+                } else if (key == "startMinimized") {
+                    config.startMinimized = (value == "true" || value == "1");
+                    log("Set startMinimized to: " + std::string(config.startMinimized ? "true" : "false"));
                 } else if (key == "selectedDeviceId") {
                     config.selectedDeviceId = value;
                     log("Set selectedDeviceId to: " + config.selectedDeviceId);
@@ -131,6 +134,9 @@ bool StorageService::saveConfig(const AppConfig& config) {
         
         file << "startOnBoot=" << (config.startOnBoot ? "true" : "false") << "\n";
         log("Written startOnBoot: " + std::string(config.startOnBoot ? "true" : "false"));
+        
+        file << "startMinimized=" << (config.startMinimized ? "true" : "false") << "\n";
+        log("Written startMinimized: " + std::string(config.startMinimized ? "true" : "false"));
         
         file << "selectedDeviceId=" << config.selectedDeviceId << "\n";
         log("Written selectedDeviceId: " + config.selectedDeviceId);

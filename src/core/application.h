@@ -89,6 +89,18 @@ public:
     bool isStartMinimizedEnabled() const;
 
     /**
+     * Set screen off delay in seconds
+     * @param delay delay in seconds before turning off screen
+     */
+    void setScreenDelay(int delay);
+
+    /**
+     * Get current screen off delay
+     * @return delay in seconds
+     */
+    int getScreenDelay() const;
+
+    /**
      * Test screen control by turning display off for 1 second then back on
      * @param onComplete callback to execute when test completes
      */

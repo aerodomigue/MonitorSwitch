@@ -231,6 +231,15 @@ bool Application::isStartMinimizedEnabled() const {
     return m_config.startMinimized;
 }
 
+void Application::setScreenDelay(int delay) {
+    m_config.screenOffDelay = delay;
+    saveConfiguration();
+}
+
+int Application::getScreenDelay() const {
+    return m_config.screenOffDelay;
+}
+
 void Application::testScreenControl(std::function<void(bool)> onComplete) {
     if (!m_displayService) {
         std::cerr << "[SCREEN TEST] Display service not available" << std::endl;
@@ -352,6 +361,10 @@ void Application::loadConfiguration() {
     std::cout << "[APP]   - Selected device: " << (m_config.selectedDeviceId.empty() ? "None" : m_config.selectedDeviceId) << std::endl;
     std::cout << "[APP]   - Screen off delay: " << m_config.screenOffDelay << " seconds" << std::endl;
     std::cout << "[APP]   - Known devices count: " << m_config.knownDevices.size() << std::endl;
+    
+    // Force save configuration to ensure all new fields are written to file
+    // This handles cases where config file was created with older version
+    saveConfiguration();
 }
 
 void Application::saveConfiguration() {
