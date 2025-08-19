@@ -144,16 +144,10 @@ jobs:
           # Verify installer was created
           ls installer_output\
           
-      - name: Upload Windows ZIP artifact
+      - name: Upload Windows Installer
         uses: actions/upload-artifact@v4
         with:
-          name: MonitorSwitch-Windows-Portable
-          path: deploy\
-          
-      - name: Upload Windows Installer artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: MonitorSwitch-Windows-Installer
+          name: MonitorSwitch-Windows-Setup
           path: installer_output\MonitorSwitch-Setup.exe
 
   build-linux:
@@ -209,6 +203,6 @@ jobs:
           prerelease: false
           # Path to files to attach to the release
           files: |
-            artifacts/MonitorSwitch.dmg
-            artifacts/MonitorSwitch.exe
+            artifacts/MonitorSwitch-macOS.zip
+            artifacts/MonitorSwitch-Setup.exe
             artifacts/MonitorSwitch
