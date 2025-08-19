@@ -22,6 +22,12 @@ WizardStyle=modern
 PrivilegesRequired=lowest
 ArchitecturesAllowed=x64
 ArchitecturesInstallIn64BitMode=x64
+; Windows compatibility settings
+MinVersion=6.1sp1
+; 6.1sp1 = Windows 7 SP1, supports Windows 7, 8, 8.1, 10, 11
+AppId={{4D5A5B1C-7E8F-4A9B-8C1D-2E3F4A5B6C7D}}
+UninstallDisplayName=MonitorSwitch
+UninstallDisplayIcon={app}\MonitorSwitch.exe
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"

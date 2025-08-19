@@ -96,7 +96,13 @@ endif()
 
 # Define platform macros for compatibility with existing code
 if(WIN32)
-    target_compile_definitions(MonitorSwitch PRIVATE PLATFORM_WINDOWS)
+    target_compile_definitions(MonitorSwitch PRIVATE 
+        PLATFORM_WINDOWS
+        # Windows version targeting for compatibility
+        WINVER=0x0601           # Windows 7
+        _WIN32_WINNT=0x0601     # Windows 7 and later (includes Windows 11)
+        NTDDI_VERSION=0x06010000 # Windows 7 SP1
+    )
 elseif(APPLE)
     target_compile_definitions(MonitorSwitch PRIVATE PLATFORM_MACOS)
 elseif(UNIX)
