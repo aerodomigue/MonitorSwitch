@@ -14,58 +14,88 @@ permissions:
 jobs:
   build-macos:
     runs-on: macos-latest
+    strategy:
+      matrix:
+        arch: [arm64, x86_64]
     steps:
       - name: Set up Qt (macOS)
         uses: jurplel/install-qt-action@v4
         with:
           version: '6.5.0'
           cache: true
-          cache-key-prefix: ${{ runner.os }}-Qt-6.5.0
+          cache-key-prefix: ${{ runner.os }}-Qt-6.5.0-${{ matrix.arch }}
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Build (macOS)
+      - name: Build (macOS ${{ matrix.arch }})
         run: |
+          # Set the target architecture in CMakeLists.txt
+          sed -i '' 's/set(CMAKE_OSX_ARCHITECTURES.*/set(CMAKE_OSX_ARCHITECTURES "${{ matrix.arch }}")/' CMakeLists.txt
           chmod +x ./build.sh
           ./build.sh
+      - name: Rename app for architecture
+        run: |
+          # Rename the app to include architecture
+          if [ "${{ matrix.arch }}" = "arm64" ]; then
+            mv build/MonitorSwitch.app build/MonitorSwitch-ARM.app
+          else
+            mv build/MonitorSwitch.app build/MonitorSwitch-Intel.app
+          fi
       - name: Sign macOS app (ad-hoc)
         run: |
+          # Determine app name based on architecture
+          if [ "${{ matrix.arch }}" = "arm64" ]; then
+            APP_NAME="MonitorSwitch-ARM.app"
+          else
+            APP_NAME="MonitorSwitch-Intel.app"
+          fi
+          
           # Ad-hoc sign the app bundle with free certificate
           # This allows the app to run without requiring a paid Apple Developer certificate
-          echo "Signing app with ad-hoc certificate..."
-          codesign --force --deep --sign - build/MonitorSwitch.app
+          echo "Signing $APP_NAME with ad-hoc certificate..."
+          codesign --force --deep --sign - build/$APP_NAME
           
           # Verify the signature
           echo "Verifying app signature..."
-          codesign --verify --verbose=2 build/MonitorSwitch.app
+          codesign --verify --verbose=2 build/$APP_NAME
           
           # Display signature information
           echo "App signature details:"
-          codesign --display --verbose=4 build/MonitorSwitch.app
+          codesign --display --verbose=4 build/$APP_NAME
           
           # Test that the app is properly signed
           echo "Testing app signature validity..."
-          spctl --assess --type exec build/MonitorSwitch.app || echo "Note: App assessment failed (expected for ad-hoc signed apps)"
+          spctl --assess --type exec build/$APP_NAME || echo "Note: App assessment failed (expected for ad-hoc signed apps)"
           
           # Verify app bundle is still intact after signing
           echo "App bundle after signing:"
-          ls -la build/MonitorSwitch.app/Contents/MacOS/
-          file build/MonitorSwitch.app/Contents/MacOS/MonitorSwitch
+          ls -la build/$APP_NAME/Contents/MacOS/
+          file build/$APP_NAME/Contents/MacOS/MonitorSwitch
       - name: Create ZIP package
         run: |
+          # Determine app and package names based on architecture
+          if [ "${{ matrix.arch }}" = "arm64" ]; then
+            APP_NAME="MonitorSwitch-ARM.app"
+            PACKAGE_NAME="MonitorSwitch-macOS-ARM"
+          else
+            APP_NAME="MonitorSwitch-Intel.app"
+            PACKAGE_NAME="MonitorSwitch-macOS-Intel"
+          fi
+          
           # Create a temporary directory for packaging
           mkdir -p macos_package
-          cp -R build/MonitorSwitch.app macos_package/
+          cp -R build/$APP_NAME macos_package/
           
           # Create installation instructions
-          cat > macos_package/INSTALL.txt << 'EOF'
-          MonitorSwitch Installation Instructions
-          =====================================
+          cat > macos_package/INSTALL.txt << EOF
+          MonitorSwitch Installation Instructions (${{ matrix.arch }})
+          =============================================
           
           IMPORTANT: This app is ad-hoc signed (free certificate) for distribution.
+          Architecture: ${{ matrix.arch }}
           
           To install and run the app:
-          1. Copy MonitorSwitch.app to your Applications folder
-          2. Right-click on MonitorSwitch.app and select "Open"
+          1. Copy $APP_NAME to your Applications folder
+          2. Right-click on $APP_NAME and select "Open"
           3. Click "Open" when macOS asks for confirmation
           4. The app will then run normally from future launches
           
@@ -75,20 +105,24 @@ jobs:
           
           Note: These security warnings are expected for apps not distributed 
           through the Mac App Store.
+          
+          Architecture Notes:
+          - ARM version: For Apple Silicon Macs (M1, M2, M3, etc.)
+          - Intel version: For Intel-based Macs
           EOF
           
           # Create the ZIP file
           cd macos_package
-          zip -r ../build/MonitorSwitch-macOS.zip .
+          zip -r ../build/${PACKAGE_NAME}.zip .
           cd ..
           
           # Verify the ZIP was created
-          ls -la build/MonitorSwitch-macOS.zip
+          ls -la build/${PACKAGE_NAME}.zip
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v4
         with:
-          name: MonitorSwitch-macOS
-          path: build/MonitorSwitch-macOS.zip
+          name: MonitorSwitch-macOS-${{ matrix.arch }}
+          path: build/MonitorSwitch-macOS-${{ matrix.arch == 'arm64' && 'ARM' || 'Intel' }}.zip
 
   build-windows:
     runs-on: windows-latest
@@ -203,6 +237,7 @@ jobs:
           prerelease: false
           # Path to files to attach to the release
           files: |
-            artifacts/MonitorSwitch-macOS.zip
+            artifacts/MonitorSwitch-macOS-ARM.zip
+            artifacts/MonitorSwitch-macOS-Intel.zip
             artifacts/MonitorSwitch-Setup.exe
             artifacts/MonitorSwitch
